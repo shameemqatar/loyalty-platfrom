@@ -1,0 +1,108 @@
+model Business {
+  id          Int      @id @default(autoincrement())
+  name        String
+  slug        String   @unique
+  email       String?
+  phone       String?
+  isActive    Boolean  @default(true)
+
+  customers        Customer[]
+  loyaltyPrograms  LoyaltyProgram[]
+  whatsappAccounts WhatsAppAccount[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+
+model Customer {
+  id          Int      @id @default(autoincrement())
+  phone       String
+  name        String?
+  email       String?
+
+  businessId  Int
+  business    Business @relation(fields: [businessId], references: [id])
+
+  loyaltyAccounts LoyaltyAccount[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([businessId, phone])
+}
+
+
+model LoyaltyProgram {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+
+  pointsPerCurrencyUnit Float @default(1)
+  isActive              Boolean @default(true)
+
+  businessId Int
+  business   Business @relation(fields: [businessId], references: [id])
+
+  accounts LoyaltyAccount[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
+
+
+model LoyaltyAccount {
+  id Int @id @default(autoincrement())
+
+  points Int @default(0)
+
+  customerId Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+
+  loyaltyProgramId Int
+  loyaltyProgram   LoyaltyProgram @relation(fields: [loyaltyProgramId], references: [id])
+
+  transactions LoyaltyTransaction[]
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+
+  @@unique([customerId, loyaltyProgramId])
+}
+
+
+model LoyaltyTransaction {
+  id Int @id @default(autoincrement())
+
+  points Int
+
+  type String
+
+  description String?
+
+  loyaltyAccountId Int
+  loyaltyAccount   LoyaltyAccount @relation(
+    fields: [loyaltyAccountId],
+    references: [id],
+  )
+
+  createdAt TimestamptzString @default(now())
+}
+
+
+model WhatsAppAccount {
+  id Int @id @default(autoincrement())
+
+  phoneNumberId String @unique
+  wabaId        String @unique
+
+  displayPhoneNumber String?
+
+  businessId Int
+  business   Business @relation(fields: [businessId], references: [id])
+
+  isActive Boolean @default(true)
+
+  createdAt TimestamptzString @default(now())
+  updatedAt temporal.updatedAtString()
+}
