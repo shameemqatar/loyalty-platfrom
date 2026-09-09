@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller.js';
-import { BusinessesModule } from './businesses/businesses.module.js';
+
 import { PrismaModule } from './prisma/prisma.module.js';
+import { BusinessesModule } from './businesses/businesses.module.js';
 import { CustomersModule } from './customers/customers.module.js';
 import { LoyaltyProgramsModule } from './loyalty-programs/loyalty-programs.module.js';
 import { LoyaltyAccountsModule } from './loyalty-accounts/loyalty-accounts.module.js';
-
+import { LoyaltyTransactionsModule } from './loyalty-transactions/loyalty-transactions.module.js';
 
 @Module({
   imports: [
@@ -14,8 +14,7 @@ import { LoyaltyAccountsModule } from './loyalty-accounts/loyalty-accounts.modul
     CustomersModule,
     LoyaltyProgramsModule,
     LoyaltyAccountsModule,
+    LoyaltyTransactionsModule,
   ],
-  controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}
