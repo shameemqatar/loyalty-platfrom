@@ -6,6 +6,8 @@ import { CustomersModule } from './customers/customers.module.js';
 import { LoyaltyProgramsModule } from './loyalty-programs/loyalty-programs.module.js';
 import { LoyaltyAccountsModule } from './loyalty-accounts/loyalty-accounts.module.js';
 import { LoyaltyTransactionsModule } from './loyalty-transactions/loyalty-transactions.module.js';
+import { WhatsAppAccountsModule } from './whatsapp-accounts/whatsapp-accounts.module.js';
+
 
 @Module({
   imports: [
@@ -15,6 +17,7 @@ import { LoyaltyTransactionsModule } from './loyalty-transactions/loyalty-transa
     LoyaltyProgramsModule,
     LoyaltyAccountsModule,
     LoyaltyTransactionsModule,
+    WhatsAppAccountsModule,
   ],
 })
 export class AppModule {}

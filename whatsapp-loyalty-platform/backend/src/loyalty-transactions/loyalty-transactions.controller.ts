@@ -9,6 +9,7 @@ import {
 
 import { LoyaltyTransactionsService } from './loyalty-transactions.service.js';
 import { CreateLoyaltyTransactionDto } from './create-loyalty-transaction.dto.js';
+import { PointsOperationDto } from './points-operation.dto.js';
 
 @Controller('businesses/:businessId/loyalty-transactions')
 export class LoyaltyTransactionsController {
@@ -36,6 +37,33 @@ export class LoyaltyTransactionsController {
             businessId,
         );
     }
+
+
+    @Post('accounts/:accountId/earn')
+earn(
+  @Param('businessId', ParseIntPipe) businessId: number,
+  @Param('accountId', ParseIntPipe) accountId: number,
+  @Body() pointsOperationDto: PointsOperationDto,
+) {
+  return this.loyaltyTransactionsService.earn(
+    businessId,
+    accountId,
+    pointsOperationDto,
+  );
+}
+
+@Post('accounts/:accountId/redeem')
+redeem(
+  @Param('businessId', ParseIntPipe) businessId: number,
+  @Param('accountId', ParseIntPipe) accountId: number,
+  @Body() pointsOperationDto: PointsOperationDto,
+) {
+  return this.loyaltyTransactionsService.redeem(
+    businessId,
+    accountId,
+    pointsOperationDto,
+  );
+}
 
     @Get(':transactionId')
     findOne(
