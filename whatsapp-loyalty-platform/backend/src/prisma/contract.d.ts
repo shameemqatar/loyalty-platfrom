@@ -33,7 +33,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'15aca9ef579ac6fbad840b21961137a5d29ac07989a2bb8c37b454828ffeb5d1'>;
+  StorageHashBase<'52e73408546106594e430cc132f782098863e63b0fe8941c86cce9b0c6ea0cea'>;
 export type ExecutionHash =
   ExecutionHashBase<'4c11869a646a5a0b5271852ef6dc6c96ca938cc9aa9e988c1e7c3890b2a2e4bc'>;
 export type ProfileHash =
@@ -291,6 +291,7 @@ export type FieldOutputTypes = {
       readonly phoneNumberId: CodecTypes['pg/text@1']['output'];
       readonly wabaId: CodecTypes['pg/text@1']['output'];
       readonly displayPhoneNumber: CodecTypes['pg/text@1']['output'] | null;
+      readonly accessTokenEncrypted: CodecTypes['pg/text@1']['output'] | null;
       readonly businessId: CodecTypes['pg/int4@1']['output'];
       readonly isActive: CodecTypes['pg/bool@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
@@ -350,6 +351,7 @@ export type FieldInputTypes = {
       readonly phoneNumberId: CodecTypes['pg/text@1']['input'];
       readonly wabaId: CodecTypes['pg/text@1']['input'];
       readonly displayPhoneNumber: CodecTypes['pg/text@1']['input'] | null;
+      readonly accessTokenEncrypted: CodecTypes['pg/text@1']['input'] | null;
       readonly businessId: CodecTypes['pg/int4@1']['input'];
       readonly isActive: CodecTypes['pg/bool@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
@@ -405,6 +407,7 @@ export type StorageColumnTypes = {
       readonly type: CodecTypes['pg/text@1']['output'];
     };
     readonly whatsAppAccount: {
+      readonly accessTokenEncrypted: CodecTypes['pg/text@1']['output'] | null;
       readonly businessId: CodecTypes['pg/int4@1']['output'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['output'];
       readonly displayPhoneNumber: CodecTypes['pg/text@1']['output'] | null;
@@ -464,6 +467,7 @@ export type StorageColumnInputTypes = {
       readonly type: CodecTypes['pg/text@1']['input'];
     };
     readonly whatsAppAccount: {
+      readonly accessTokenEncrypted: CodecTypes['pg/text@1']['input'] | null;
       readonly businessId: CodecTypes['pg/int4@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-string@1']['input'];
       readonly displayPhoneNumber: CodecTypes['pg/text@1']['input'] | null;
@@ -869,6 +873,11 @@ type ContractBase = Omit<
                   readonly nullable: false;
                 };
                 readonly displayPhoneNumber: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly accessTokenEncrypted: {
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: true;
@@ -1362,6 +1371,10 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
+              readonly accessTokenEncrypted: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly businessId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
@@ -1406,6 +1419,7 @@ type ContractBase = Omit<
                 readonly phoneNumberId: { readonly column: 'phoneNumberId' };
                 readonly wabaId: { readonly column: 'wabaId' };
                 readonly displayPhoneNumber: { readonly column: 'displayPhoneNumber' };
+                readonly accessTokenEncrypted: { readonly column: 'accessTokenEncrypted' };
                 readonly businessId: { readonly column: 'businessId' };
                 readonly isActive: { readonly column: 'isActive' };
                 readonly createdAt: { readonly column: 'createdAt' };

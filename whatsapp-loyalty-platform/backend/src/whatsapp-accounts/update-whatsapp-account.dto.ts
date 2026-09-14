@@ -18,6 +18,10 @@ export class UpdateWhatsAppAccountDto {
   displayPhoneNumber?: string;
 
   @IsOptional()
+  @IsString()
+  accessToken?: string;
+
+  @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 }

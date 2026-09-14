@@ -8,10 +8,14 @@ import { PrismaService } from '../prisma/prisma.service.js';
 
 import { CreateWhatsAppAccountDto } from './create-whatsapp-account.dto.js';
 import { UpdateWhatsAppAccountDto } from './update-whatsapp-account.dto.js';
+import { WhatsAppTokenService } from './whatsapp-token.service.js';
 
 @Injectable()
 export class WhatsAppAccountsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly whatsappTokenService: WhatsAppTokenService,
+  ) { }
 
   async create(
     businessId: number,
@@ -58,11 +62,17 @@ export class WhatsAppAccountsService {
       );
     }
 
+    const encryptedToken =
+      this.whatsappTokenService.encrypt(
+        createDto.accessToken,
+      );
+
     return this.prisma.db.orm.public.WhatsAppAccount.create({
       businessId,
       phoneNumberId: createDto.phoneNumberId,
       wabaId: createDto.wabaId,
       displayPhoneNumber: createDto.displayPhoneNumber,
+      accessTokenEncrypted: encryptedToken,
       isActive: createDto.isActive ?? true,
     });
   }
@@ -141,6 +151,12 @@ export class WhatsAppAccountsService {
       }
     }
 
+    const encryptedToken = updateDto.accessToken
+      ? this.whatsappTokenService.encrypt(
+        updateDto.accessToken,
+      )
+      : undefined;
+
     return this.prisma.db.orm.public.WhatsAppAccount
       .where({
         id,
@@ -150,6 +166,7 @@ export class WhatsAppAccountsService {
         phoneNumberId: updateDto.phoneNumberId,
         wabaId: updateDto.wabaId,
         displayPhoneNumber: updateDto.displayPhoneNumber,
+        accessTokenEncrypted: encryptedToken,
         isActive: updateDto.isActive,
       });
   }

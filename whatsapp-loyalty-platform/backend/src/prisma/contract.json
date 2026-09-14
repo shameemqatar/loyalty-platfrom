@@ -610,6 +610,13 @@
           },
           "WhatsAppAccount": {
             "fields": {
+              "accessTokenEncrypted": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
               "businessId": {
                 "nullable": false,
                 "type": {
@@ -686,6 +693,9 @@
             },
             "storage": {
               "fields": {
+                "accessTokenEncrypted": {
+                  "column": "accessTokenEncrypted"
+                },
                 "businessId": {
                   "column": "businessId"
                 },
@@ -1165,6 +1175,11 @@
             },
             "whatsAppAccount": {
               "columns": {
+                "accessTokenEncrypted": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
                 "businessId": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
@@ -1270,7 +1285,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "15aca9ef579ac6fbad840b21961137a5d29ac07989a2bb8c37b454828ffeb5d1"
+    "storageHash": "52e73408546106594e430cc132f782098863e63b0fe8941c86cce9b0c6ea0cea"
   },
   "execution": {
     "executionHash": "4c11869a646a5a0b5271852ef6dc6c96ca938cc9aa9e988c1e7c3890b2a2e4bc",

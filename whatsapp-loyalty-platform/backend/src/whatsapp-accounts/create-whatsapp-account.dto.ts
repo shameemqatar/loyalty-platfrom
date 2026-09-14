@@ -18,6 +18,10 @@ export class CreateWhatsAppAccountDto {
   @IsString()
   displayPhoneNumber?: string;
 
+  @IsString()
+  @IsNotEmpty()
+  accessToken: string;
+
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;

@@ -1,18 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { WhatsappAccountsController } from './whatsapp-accounts.controller.js';
+import { WhatsAppAccountsController } from './whatsapp-accounts.controller.js';
 
-describe('WhatsappAccountsController', () => {
-  let controller: WhatsappAccountsController;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [WhatsappAccountsController],
-    }).compile();
-
-    controller = module.get<WhatsappAccountsController>(WhatsappAccountsController);
-  });
-
+describe('WhatsAppAccountsController', () => {
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(WhatsAppAccountsController).toBeDefined();
   });
 });

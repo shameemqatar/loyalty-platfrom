@@ -97,6 +97,7 @@ model WhatsAppAccount {
   wabaId        String @unique
 
   displayPhoneNumber String?
+  accessTokenEncrypted String?
 
   businessId Int
   business   Business @relation(fields: [businessId], references: [id])
