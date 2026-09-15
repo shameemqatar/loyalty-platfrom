@@ -6,8 +6,13 @@ import { WhatsAppTokenService } from './whatsapp-token.service.js';
 
 @Module({
   controllers: [WhatsAppAccountsController],
+
   providers: [
     WhatsAppAccountsService,
+    WhatsAppTokenService,
+  ],
+
+  exports: [
     WhatsAppTokenService,
   ],
 })

@@ -16,58 +16,65 @@ export class WhatsAppAccountsService {
     private readonly prisma: PrismaService,
     private readonly whatsappTokenService: WhatsAppTokenService,
   ) { }
+  private sanitizeAccount(account: any) {
+  const { accessTokenEncrypted, ...safeAccount } = account;
+
+  return safeAccount;
+}
 
   async create(
-    businessId: number,
-    createDto: CreateWhatsAppAccountDto,
-  ) {
-    const business = await this.prisma.db.orm.public.Business.first({
-      id: businessId,
+  businessId: number,
+  createDto: CreateWhatsAppAccountDto,
+) {
+  const business = await this.prisma.db.orm.public.Business.first({
+    id: businessId,
+  });
+
+  if (!business) {
+    throw new NotFoundException('Business not found.');
+  }
+
+  const existingBusinessAccount =
+    await this.prisma.db.orm.public.WhatsAppAccount.first({
+      businessId,
     });
 
-    if (!business) {
-      throw new NotFoundException('Business not found.');
-    }
+  if (existingBusinessAccount) {
+    throw new ConflictException(
+      'This business already has a WhatsApp account.',
+    );
+  }
 
-    const existingBusinessAccount =
-      await this.prisma.db.orm.public.WhatsAppAccount.first({
-        businessId,
-      });
+  const existingPhoneNumber =
+    await this.prisma.db.orm.public.WhatsAppAccount.first({
+      phoneNumberId: createDto.phoneNumberId,
+    });
 
-    if (existingBusinessAccount) {
-      throw new ConflictException(
-        'This business already has a WhatsApp account.',
-      );
-    }
+  if (existingPhoneNumber) {
+    throw new ConflictException(
+      'This WhatsApp phone number is already connected.',
+    );
+  }
 
-    const existingPhoneNumber =
-      await this.prisma.db.orm.public.WhatsAppAccount.first({
-        phoneNumberId: createDto.phoneNumberId,
-      });
+  const existingWaba =
+    await this.prisma.db.orm.public.WhatsAppAccount.first({
+      wabaId: createDto.wabaId,
+    });
 
-    if (existingPhoneNumber) {
-      throw new ConflictException(
-        'This WhatsApp phone number is already connected.',
-      );
-    }
+  if (existingWaba) {
+    throw new ConflictException(
+      'This WhatsApp Business Account is already connected.',
+    );
+  }
 
-    const existingWaba =
-      await this.prisma.db.orm.public.WhatsAppAccount.first({
-        wabaId: createDto.wabaId,
-      });
+  // Encrypt the Meta access token before storing it
+  const encryptedToken =
+    this.whatsappTokenService.encrypt(
+      createDto.accessToken,
+    );
 
-    if (existingWaba) {
-      throw new ConflictException(
-        'This WhatsApp Business Account is already connected.',
-      );
-    }
-
-    const encryptedToken =
-      this.whatsappTokenService.encrypt(
-        createDto.accessToken,
-      );
-
-    return this.prisma.db.orm.public.WhatsAppAccount.create({
+  const account =
+    await this.prisma.db.orm.public.WhatsAppAccount.create({
       businessId,
       phoneNumberId: createDto.phoneNumberId,
       wabaId: createDto.wabaId,
@@ -75,89 +82,98 @@ export class WhatsAppAccountsService {
       accessTokenEncrypted: encryptedToken,
       isActive: createDto.isActive ?? true,
     });
-  }
+
+  return this.sanitizeAccount(account);
+}
 
   async findAll(businessId: number) {
-    const business = await this.prisma.db.orm.public.Business.first({
+  const business =
+    await this.prisma.db.orm.public.Business.first({
       id: businessId,
     });
 
-    if (!business) {
-      throw new NotFoundException('Business not found.');
-    }
+  if (!business) {
+    throw new NotFoundException('Business not found.');
+  }
 
-    return this.prisma.db.orm.public.WhatsAppAccount
+  const accounts =
+    await this.prisma.db.orm.public.WhatsAppAccount
       .where({
         businessId,
       })
       .all();
-  }
+
+  return accounts.map((account) =>
+    this.sanitizeAccount(account),
+  );
+}
 
   async findOne(
-    businessId: number,
-    id: number,
-  ) {
-    const account =
-      await this.prisma.db.orm.public.WhatsAppAccount.first({
-        id,
-        businessId,
-      });
+  businessId: number,
+  id: number,
+) {
+  const account =
+    await this.prisma.db.orm.public.WhatsAppAccount.first({
+      id,
+      businessId,
+    });
 
-    if (!account) {
-      throw new NotFoundException(
-        'WhatsApp account not found.',
-      );
-    }
-
-    return account;
+  if (!account) {
+    throw new NotFoundException(
+      'WhatsApp account not found.',
+    );
   }
 
-  async update(
-    businessId: number,
-    id: number,
-    updateDto: UpdateWhatsAppAccountDto,
-  ) {
-    await this.findOne(businessId, id);
+  return this.sanitizeAccount(account);
+}
 
-    if (updateDto.phoneNumberId) {
-      const existingPhoneNumber =
-        await this.prisma.db.orm.public.WhatsAppAccount.first({
-          phoneNumberId: updateDto.phoneNumberId,
-        });
+ async update(
+  businessId: number,
+  id: number,
+  updateDto: UpdateWhatsAppAccountDto,
+) {
+  await this.findOne(businessId, id);
 
-      if (
-        existingPhoneNumber &&
-        existingPhoneNumber.id !== id
-      ) {
-        throw new ConflictException(
-          'This WhatsApp phone number is already connected.',
-        );
-      }
+  if (updateDto.phoneNumberId) {
+    const existingPhoneNumber =
+      await this.prisma.db.orm.public.WhatsAppAccount.first({
+        phoneNumberId: updateDto.phoneNumberId,
+      });
+
+    if (
+      existingPhoneNumber &&
+      existingPhoneNumber.id !== id
+    ) {
+      throw new ConflictException(
+        'This WhatsApp phone number is already connected.',
+      );
     }
+  }
 
-    if (updateDto.wabaId) {
-      const existingWaba =
-        await this.prisma.db.orm.public.WhatsAppAccount.first({
-          wabaId: updateDto.wabaId,
-        });
+  if (updateDto.wabaId) {
+    const existingWaba =
+      await this.prisma.db.orm.public.WhatsAppAccount.first({
+        wabaId: updateDto.wabaId,
+      });
 
-      if (
-        existingWaba &&
-        existingWaba.id !== id
-      ) {
-        throw new ConflictException(
-          'This WhatsApp Business Account is already connected.',
-        );
-      }
+    if (
+      existingWaba &&
+      existingWaba.id !== id
+    ) {
+      throw new ConflictException(
+        'This WhatsApp Business Account is already connected.',
+      );
     }
+  }
 
-    const encryptedToken = updateDto.accessToken
-      ? this.whatsappTokenService.encrypt(
+  const encryptedToken = updateDto.accessToken
+    ? this.whatsappTokenService.encrypt(
         updateDto.accessToken,
       )
-      : undefined;
+    : undefined;
 
-    return this.prisma.db.orm.public.WhatsAppAccount
+  const account =
+    await this.prisma.db.orm.public.WhatsAppAccount
       .where({
         id,
         businessId,
@@ -169,7 +185,9 @@ export class WhatsAppAccountsService {
         accessTokenEncrypted: encryptedToken,
         isActive: updateDto.isActive,
       });
-  }
+
+  return this.sanitizeAccount(account);
+}
 
   async remove(
     businessId: number,
