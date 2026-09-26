@@ -1,6 +1,8 @@
 import {
+  Body,
   Controller,
   Get,
+  Post,
   Query,
   Res,
 } from '@nestjs/common';
@@ -27,5 +29,12 @@ export class WhatsappWebhookController {
       challenge,
       response,
     );
+  }
+
+  @Post()
+  receiveWebhook(
+    @Body() body: any,
+  ) {
+    return this.whatsappWebhookService.receiveWebhook(body);
   }
 }
